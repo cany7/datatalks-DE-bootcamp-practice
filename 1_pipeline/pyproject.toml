@@ -5,12 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "pip>=25.3",
-    "numpy>=2.3.3",
+    "argparse>=1.4.0",
+    "numpy>=2.4.0",
     "pandas>=2.3.3",
+    "pip>=25.3",
     "psycopg-binary>=3.3.2",
     "psycopg2-binary>=2.9.11",
     "pyarrow>=22.0.0",
+    "python-dateutil>=2.9.0.post0",
+    "pytz>=2025.2",
+    "six>=1.17.0",
     "sqlalchemy>=2.0.46",
     "tqdm>=4.67.2",
 ]

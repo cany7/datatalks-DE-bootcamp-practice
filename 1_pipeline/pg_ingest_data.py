@@ -1,16 +1,30 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#Using argparse to avoid Hardcode for the parameters
-import argparse
+# Using click to avoid hardcoding parameters — decorator-based CLI argument parsing
 import pandas as pd
 from sqlalchemy import create_engine
 from tqdm.auto import tqdm
+import click
 
-def run(args):
-    #Read a sample of the data
-    #Create the engine, using sqlalchemy to connect to postgres db
-    engine = create_engine(f'postgresql://{args.user}:{args.password}@{args.host}:{args.port}/{args.database}')
+@click.command()
+@click.option('--year',         default=2021,        type=int,    help='Year of the data')
+@click.option('--month',        default=1,           type=int,    help='Month of the data')
+@click.option('--pg-user',      default='root',                   help='PostgreSQL user')
+@click.option('--pg-pass',      default='root',                   help='PostgreSQL password')
+@click.option('--pg-host',      default='localhost',              help='PostgreSQL host')
+@click.option('--pg-port',      default=5432,        type=int,    help='PostgreSQL port')
+@click.option('--pg-db',        default='ny_taxi',                help='PostgreSQL database name')
+@click.option('--target-table', default='yellow_taxi_data',       help='Target table name')
+@click.option('--chunksize',    default=100000,      type=int,    help='Chunk size')
+
+def run(year, month, pg_user, pg_pass, pg_host, pg_port, pg_db, target_table, chunksize):
+    # Parameterize the URL; month:02d means format as decimal integer with minimum width 2, zero-padded if needed
+    prefix = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_'
+    url = f'{prefix}{year}-{month:02d}.csv.gz'
+
+    # Create the engine, using sqlalchemy to connect to postgres db
+    engine = create_engine(f'postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}')
 
     # Specify dtypes explicitly to avoid pandas chunk-based inference causing mixed-type warnings and unstable schemas
     dtype = {
@@ -32,28 +46,21 @@ def run(args):
         "congestion_surcharge": "float64"
     }
 
-    parse_dates = [
-        "tpep_pickup_datetime",
-        "tpep_dropoff_datetime"
-    ]
+    parse_dates = ["tpep_pickup_datetime", "tpep_dropoff_datetime"]
 
+    # Not a regular dataframe here, a TextFileReader iterator gets chunksize rows at a time
     df_iter = pd.read_csv(
-        args.url,
+        url,
         dtype=dtype,
         parse_dates=parse_dates,
         iterator=True,
-        #Not a regular dataframe here, a TextFileReader iterator gets 100,000 rows at a time
-        chunksize= args.chunksize
+        chunksize=chunksize
     )
-
-    target_table = 'yellow_taxi_data'
-
     # The integrated version, with using tqdm to show the progress bar; Create table first if not exists
     first = True
 
     for df_chunk in tqdm(df_iter):
         if first:
-            # Create an empty table with schema
             df_chunk.head(0).to_sql(
                 name=target_table,
                 con=engine,
@@ -63,15 +70,29 @@ def run(args):
             first = False
             print("Table created")
 
-        # Insert chunk
         df_chunk.to_sql(
             name=target_table,
             con=engine,
             if_exists="append",
             index=False
         )
-
         print("Inserted:", len(df_chunk))
+
+
+if __name__ == '__main__':
+    run()
+
+
+
+'''
+Original argparse version code
+# import argparse
+
+def run(args):
+    #Read a sample of the data
+    #Create the engine, using sqlalchemy to connect to postgres db
+    engine = create_engine(f'postgresql://{args.user}:{args.password}@{args.host}:{args.port}/{args.database}')
+
 
 
 if __name__ == '__main__':
@@ -94,3 +115,4 @@ if __name__ == '__main__':
     pg_args.url = f'{prefix}{pg_args.year}-{pg_args.month:02d}.csv.gz'
 
     run(pg_args)
+'''

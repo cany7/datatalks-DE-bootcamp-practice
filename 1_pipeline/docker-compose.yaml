@@ -1,0 +1,38 @@
+# Docker Compose configuration to launch PostgreSQL and pgAdmin together
+# No manual network setup needed — Compose creates a default network automatically,
+# and all services can reach each other by their service name (e.g. pgdatabase, pgadmin).
+
+services:
+
+  # PostgreSQL database service
+  pgdatabase:
+    image: postgres:18
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      # Persist database data across container restarts using a named volume
+      - "ny_taxi_postgres_data:/var/lib/postgresql:rw"
+    ports:
+      # Expose PostgreSQL on host port 5432
+      - "5432:5432"
+
+  # pgAdmin web UI service for browsing and querying the database
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes:
+      # Persist pgAdmin settings (saved connections, etc.) across restarts
+      - "pgadmin_data:/var/lib/pgadmin"
+    ports:
+      # pgAdmin UI accessible at http://localhost:8085
+      - "8085:80"
+
+# Named volumes — Docker manages the actual storage location on the host
+volumes:
+  ny_taxi_postgres_data:
+  pgadmin_data:
+

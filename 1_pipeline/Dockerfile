@@ -10,14 +10,14 @@ WORKDIR /app
 # Add virtual environment to PATH so we can use installed packages
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy dependency files first (betterlayer caching)
+# Copy dependency files first (better layer caching)
 COPY "pyproject.toml" "uv.lock" ".python-version" ./
 
 # Install dependencies from lock file (ensures reproducible builds)
-RUN uv sync --locked
+RUN uv sync --locked --no-dev
 
 # Copy application code
-COPY 1_pipeline/pipeline.py pipeline.py
+COPY "pg_ingest_data.py" .
 
 # Set entry point
-ENTRYPOINT ["python", "pipeline.py"]
+ENTRYPOINT ["python", "pg_ingest_data.py"]

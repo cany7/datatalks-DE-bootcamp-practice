@@ -1,0 +1,116 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+wheels/
+
+# ========================
+# Virtual Environments
+# ========================
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.*
+*.env
+!.env.example
+
+# ========================
+# uv
+# ========================
+# uv.lock is intentionally kept (reproducible builds)
+# but cache dirs are ignored
+.uv/
+
+# ========================
+# Jupyter Notebook
+# ========================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ========================
+# IDE - JetBrains (PyCharm etc.)
+# ========================
+.idea/
+
+# ========================
+# IDE - VS Code
+# ========================
+.vscode/
+
+# ========================
+# macOS
+# ========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ========================
+# Docker
+# ========================
+docker-compose.override.yml
+
+# ========================
+# Database / Data files
+# ========================
+*.csv
+*.parquet
+*.json
+*.sqlite
+*.db
+*.sql.gz
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# Credentials / Secrets
+# ========================
+*.pem
+*.key
+service_account*.json
+credentials*.json
+secrets/
+
+# ========================
+# Misc
+# ========================
+*.tmp
+*.bak
+*.swp
+*.swo
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
